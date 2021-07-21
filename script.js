@@ -1,7 +1,7 @@
 let base_url = 'http://'+ window.location.hostname +'/'
 //console.log(base_url);
 // alert(window.location.href);
-
+let regExpres = /[^,]*/
 
 
 
@@ -24,26 +24,29 @@ function onMapLoad() {
 		data: "data",
 		dataType: "json",
 		success: function (response) {
-		 
+		
+		let arrForSelect =[];
+		
 		response.forEach(element => {
-			data_markers.push(element);
-			all.push(element.KIND_FOOD)
+			data_markers.push(element);			
+			all.push(element.KIND_FOOD);
+			console.log(element.KIND_FOOD.match(regExpres));
+			arrForSelect.push(element.KIND_FOOD.match(regExpres)[0]);
 		});
+
+		console.log(arrForSelect);
         
 		$('#kind_food_selector').html($('#kind_food_selector').html()+` <option value="all">Todos</option>`);
 		        
 	    let arregloUnico =[];
-		for (let index = 0; index < data_markers.length; index++) {
+		for (let index = 0; index < arrForSelect.length; index++) {
 			
-			let valorUnico = data_markers[index].KIND_FOOD;
+			let valorUnico = arrForSelect[index];
 			render_to_map(data_markers, 'all');
 			let esDuplicado = false;
-			for(var i = 0; i < arregloUnico.length; i++) {
-
-				if (arregloUnico[i]== valorUnico) {
-					
-					esDuplicado = true;
-					
+			for(var i = 0; i < arregloUnico.length; i++) {                 
+				if (arregloUnico[i]== valorUnico) {					 
+					esDuplicado = true;					
 				}
 			} 
 			if (!esDuplicado) {
@@ -52,6 +55,7 @@ function onMapLoad() {
 		        
 			}
 		}
+		
 		}
 	    
 	});
@@ -90,9 +94,9 @@ function render_to_map(data_markers,filter){
 	//ok
 	data_markers.forEach(element => {
 		
-		if (filter == element.KIND_FOOD || filter === 'all') {
+		if (element.KIND_FOOD.includes(filter) || filter === 'all') {
 			let layer = new L.marker([element.lat, element.lon])
-			.bindPopup(`${element.name}.<br> ${element.address} <br> <img src="${element.photos}" alt="photos" style="width: 100px;"> <br> ${element.lat},<br> ${element.lon}`)
+			.bindPopup(`${element.name}.<br> ${element.address} <br> <img src="${element.photos}" alt="photos" style="width: 100px;"> <br> ${element.KIND_FOOD}`)
 			.openPopup();
 			layers.push(layer);
 		}	 
